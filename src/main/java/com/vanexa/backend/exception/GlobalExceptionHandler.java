@@ -1,7 +1,10 @@
+
 package com.vanexa.backend.exception;
 
 import jakarta.validation.ConstraintViolationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,9 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     private ResponseEntity<Map<String, Object>> buildResponse(
             HttpStatus status,
@@ -105,6 +111,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleDataIntegrity(
             DataIntegrityViolationException exception) {
 
+        log.error("Database integrity violation: ", exception);
+
         return buildResponse(
                 HttpStatus.CONFLICT,
                 "The operation conflicts with existing database data",
@@ -112,7 +120,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // Handle existing service methods that throw IllegalArgumentException
+    // Handle service methods that throw IllegalArgumentException
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
             IllegalArgumentException exception) {
@@ -151,6 +159,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(
             Exception exception) {
+
+        // Log the complete exception and stack trace in the Run console
+        log.error("Unexpected server error: ", exception);
 
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,

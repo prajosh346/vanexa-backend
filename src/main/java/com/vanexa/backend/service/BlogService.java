@@ -604,5 +604,9 @@ public class BlogService {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Published blog not found"));
     }
+    @Transactional(readOnly = true)
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
+    }
 
 }

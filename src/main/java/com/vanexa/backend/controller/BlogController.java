@@ -9,7 +9,7 @@ import com.vanexa.backend.repository.UserRepository;
 import com.vanexa.backend.service.BlogService;
 
 import jakarta.validation.Valid;
-
+import com.vanexa.backend.entity.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -418,5 +418,11 @@ public class BlogController {
         return ResponseEntity.ok(
                 blogService.getBlogsByDateFilter(
                         filter, startDate, endDate, page, size));
+    }
+    // -------------------- TAG LIST --------------------
+
+    @GetMapping("/tags")
+    public ResponseEntity<List<Tag>> getAllTags() {
+        return ResponseEntity.ok(blogService.getAllTags());
     }
 }

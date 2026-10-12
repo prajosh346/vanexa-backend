@@ -1,3 +1,4 @@
+
 package com.vanexa.backend.config;
 
 import com.vanexa.backend.security.JwtAuthenticationFilter;
@@ -49,13 +50,19 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Authentication endpoints
-                        .requestMatchers("/api/auth/**")
-                        .permitAll()
+                        // Public login and logout endpoints
+                        // LogoutController validates the JWT explicitly
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/auth/login",
+                                "/api/auth/logout"
+                        ).permitAll()
 
                         // CORS preflight requests
-                        .requestMatchers(HttpMethod.OPTIONS, "/**")
-                        .permitAll()
+                        .requestMatchers(
+                                HttpMethod.OPTIONS,
+                                "/**"
+                        ).permitAll()
 
                         // Public blog reading
                         .requestMatchers(
@@ -70,13 +77,17 @@ public class SecurityConfig {
                                 "/api/blogs/public/*/view"
                         ).permitAll()
 
-                        // Public category and tag reading
+                        // Public tag listing through BlogController
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/blogs/tags"
+                        ).permitAll()
+
+                        // Public category reading
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/categories",
-                                "/api/categories/**",
-                                "/api/tags",
-                                "/api/tags/**"
+                                "/api/categories/**"
                         ).permitAll()
 
                         // ADMIN-only blog date filter
@@ -91,7 +102,7 @@ public class SecurityConfig {
                                 "/api/blogs/*/restore"
                         ).hasRole("ADMIN")
 
-                        // ADMIN and AUTHOR can reach the status endpoint.
+                        // ADMIN and AUTHOR can access the status endpoint.
                         // BlogController enforces ownership and publishing rules.
                         .requestMatchers(
                                 HttpMethod.PATCH,
@@ -162,7 +173,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration)
             throws Exception {
-
         return configuration.getAuthenticationManager();
     }
 
